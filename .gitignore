@@ -1,0 +1,11 @@
+# dev setting files
+.idea
+.vscode
+.temp
+
+# build cache files
+cmake-*
+build
+
+# self files
+pages/*.md
