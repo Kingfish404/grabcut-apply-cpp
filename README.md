@@ -62,3 +62,14 @@ opencv mask四状态
 
 ![](./images/demo-2.png)
 
+## Lib
+
+* [opencv](https://github.com/opencv/opencv) Open Source Computer Vision Library
+* [cmake](https://cmake.org/) CMake is an open-source, cross-platform family of tools designed to build, test and package software
+
+## REF
+
+* [读《"GrabCut" -- Interactive Foreground Extraction using Iterated Graph Cuts》](https://zhuanlan.zhihu.com/p/20255114)
+* [图像分割之（二）Graph Cut（图割）](https://blog.csdn.net/zouxy09/article/details/8532111)
+* [图像分割之（三）从Graph Cut到Grab Cut
+](https://blog.csdn.net/zouxy09/article/details/8534954)
