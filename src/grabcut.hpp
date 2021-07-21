@@ -1,6 +1,7 @@
 #ifndef GRABCUT_HPP
 #define GRABCUT_HPP
 
+#include <sys/time.h>
 #include "opencv2/opencv.hpp"
 #include "opencv2/imgproc/detail/gcgraph.hpp"
 #include "opencv2/core/types_c.h"
@@ -16,7 +17,7 @@ using namespace cv::detail;
 class GMM
 {
 public:
-    static const int componentsCount = 5;
+    static const int componentsCount = 3;
 
     explicit GMM(Mat &_model);
 
@@ -578,6 +579,12 @@ void selfGrabCut(const _InputArray &_img, const _InputOutputArray &_mask, Rect r
     Mat &bgdModel = _bgdModel.getMatRef();
     Mat &fgdModel = _fgdModel.getMatRef();
 
+    struct timeval time_first{};
+    struct timeval time_last{};
+    gettimeofday(&time_first, nullptr);
+    time_t msecs_time = (time_first.tv_sec * 1000) + (time_first.tv_usec / 1000);
+    std::cout << "init start: " << msecs_time << std::endl;
+
     GMM bgdGMM(bgdModel), fgdGMM(fgdModel);
     Mat compIdxs(img.size(), CV_32SC1);
 
@@ -590,13 +597,29 @@ void selfGrabCut(const _InputArray &_img, const _InputOutputArray &_mask, Rect r
     Mat leftW, upleftW, upW, uprightW;
     calcNWeights(img, leftW, upleftW, upW, uprightW, beta, gamma);
 
+    gettimeofday(&time_last, nullptr);
+    time_t msecs_time_last = (time_last.tv_sec * 1000) + (time_last.tv_usec / 1000);
+    std::cout << "init last: " << msecs_time_last << std::endl;
+
+    std::cout << "init cost ms: " << msecs_time_last - msecs_time << std::endl;
+
     for (int i = 0; i < iterCount; i++)
     {
+        gettimeofday(&time_first, nullptr);
+        time_t msecs_time = (time_first.tv_sec * 1000) + (time_first.tv_usec / 1000);
+        std::cout << "next start: " << msecs_time << std::endl;
+
         GCGraph<double> graph;
         assignGMMsComponents(img, mask, bgdGMM, fgdGMM, compIdxs);
         learnGMMs(img, mask, compIdxs, bgdGMM, fgdGMM);
         constructGCGraph(img, mask, bgdGMM, fgdGMM, lambda, leftW, upleftW, upW, uprightW, graph);
         estimateSegmentation(graph, mask);
+
+        gettimeofday(&time_last, nullptr);
+        time_t msecs_time_last = (time_last.tv_sec * 1000) + (time_last.tv_usec / 1000);
+        std::cout << "next last: " << msecs_time_last << std::endl;
+
+        std::cout << "next cost ms: " << msecs_time_last - msecs_time << std::endl;
     }
 }
 
